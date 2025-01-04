@@ -10,8 +10,8 @@
 
 [Unit]
 Description=Podman openhab.service
-Requires=mariadb-app.service openhab-app.service
-Before=mariadb-app.service openhab-app.service
+Requires=openhab-app.service
+Before=openhab-app.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n

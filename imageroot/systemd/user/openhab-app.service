@@ -6,7 +6,7 @@
 [Unit]
 Description=Podman  openhab-app.service
 BindsTo=openhab.service
-After=openhab.service mariadb-app.service
+After=openhab.service 
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -21,16 +21,18 @@ ExecStartPre=-runagent discover-smarthost
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/openhab-app.pid \
     --cidfile %t/openhab-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/openhab.pod-id --replace -d --name  openhab-app \
-    --volume openhab-app:/var/www/html/:Z \
-    --volume ./tmp:/tmp:Z \
-    --env=MARIADB_* \
-    --env MARIADB_DB_TYPE=mysql \
-    --env MARIADB_DB_HOST=127.0.0.1 \
-    --env MARIADB_DB_PORT=3306 \
-    --env MARIADB_DB_USER=openhab \
-    --env MARIADB_DB_PASSWORD=openhab \
-    --env MARIADB_DB_NAME=openhab \
-    ${NGINX_IMAGE}
+    --net=host \
+    --volume /etc/localtime:/etc/localtime:ro \
+    --volume /etc/timezone:/etc/timezone:ro \
+    --volume openhab-conf:/openhab/conf:Z \
+    --volume openhab-userdata:/openhab/userdata:Z \
+    --volume openhab-addons:/openhab/addons:Z \
+    --volume openhab-java:/openhab/.java:Z \
+    --device=/dev/ttyUSB0 \
+  #-e USER_ID=<uid_of_openhab> \
+  #-e GROUP_ID=<gid_of_openhab> \
+  #-e CRYPTO_POLICY=unlimited \
+    ${OPENHAB_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/openhab-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP openhab-app
 SyslogIdentifier=%u
