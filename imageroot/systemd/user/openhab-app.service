@@ -30,6 +30,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/openhab-app.pid \
     --volume openhab-java:/openhab/.java:Z \
 #    --device=/dev/ttyUSB0 \
 #    --env CRYPTO_POLICY=unlimited \
+    --env OPENHAB_HTTP_PORT=${TCP_PORT} \
     ${OPENHAB_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/openhab-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP openhab-app

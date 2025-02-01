@@ -22,9 +22,7 @@ ExecStartPre=/bin/rm -f %t/openhab.pid %t/openhab.pod-id
 ExecStartPre=/usr/bin/podman pod create --infra-conmon-pidfile %t/openhab.pid \
     --pod-id-file %t/openhab.pod-id \
     --name openhab \
-    --publish 127.0.0.1:${TCP_PORT}:8080 \
-    --publish 1900:1900/udp \
-    --publish 5000:5000 \
+    --network=host \
     --replace
 ExecStart=/usr/bin/podman pod start --pod-id-file %t/openhab.pod-id
 ExecStop=/usr/bin/podman pod stop --ignore --pod-id-file %t/openhab.pod-id -t 10
